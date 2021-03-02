@@ -3,26 +3,6 @@
 type PromiseOrType<T> = Promise<T> | T;
 
 /*
- * Type definitions for extending Window interface
- */
-
-interface IteratorPrototype<T, TReturn = any, TNext = undefined> {
-  protoype: Iterator<T, TReturn, TNext>;
-}
-
-interface AsyncIteratorPrototype<T, TReturn = any, TNext = undefined> {
-  protoype: AsyncIterator<T, TReturn, TNext>;
-}
-
-interface Window {
-  Iterator: IteratorPrototype<any>;
-  AsyncIterator: AsyncIteratorPrototype<any>;
-}
-
-declare const Iterator: IteratorPrototype<any>;
-declare const AsyncIterator: IteratorPrototype<any>;
-
-/*
  * Type definitions for extending Iterator & AsyncIterator interfaces
  */
 
@@ -56,6 +36,16 @@ interface Iterator<T, TReturn = any, TNext = undefined> {
   find(callback: (value: T) => boolean) : T | undefined;
 }
 
+interface IteratorConstructor {
+  new(): Iterator<any>
+  new<T>(): Iterator<T>
+  new<T, TReturn, TNext>(): Iterator<T, TReturn, TNext>
+
+  readonly prototype: Iterator<any>
+}
+
+declare var Iterator: IteratorConstructor
+
 interface AsyncIterator<T, TReturn = any, TNext = undefined> {
   /** Map each value of iterator to another value via {callback}. */
   map<R>(callback: (value: T) => PromiseOrType<R>) : AsyncIterator<R, TReturn, TNext>;
@@ -86,6 +76,15 @@ interface AsyncIterator<T, TReturn = any, TNext = undefined> {
   find(callback: (value: T) => PromiseOrType<boolean>) : Promise<T | undefined>;
 }
 
+interface AsyncIteratorConstructor {
+  new(): AsyncIterator<any>
+  new<T>(): AsyncIterator<T>
+  new<T, TReturn, TNext>(): AsyncIterator<T, TReturn, TNext>
+
+  readonly prototype: AsyncIterator<any>
+}
+
+declare var AsyncIterator: AsyncIteratorConstructor
 
 /**
  * Polyfill
@@ -97,22 +96,8 @@ interface AsyncIterator<T, TReturn = any, TNext = undefined> {
  */
 
 (function () {
-  function getGlobal() {
-    if (typeof window !== 'undefined') {
-      return window;
-    }
-    // @ts-ignore
-    if (typeof global !== 'undefined') {
-      // @ts-ignore
-      return global;
-    }
-    return new Function('return this')();
-  }
-
-  const _globalThis = typeof globalThis === 'undefined' ? getGlobal() : globalThis;
-
   // polyfill already applied / proposal implemented
-  if ('Iterator' in _globalThis && 'AsyncIterator' in _globalThis) {
+  if ('Iterator' in globalThis && 'AsyncIterator' in globalThis) {
     return;
   }
 
@@ -631,20 +616,20 @@ interface AsyncIterator<T, TReturn = any, TNext = undefined> {
     },
   });
 
-  if (!('Iterator' in _globalThis)) {
+  if (!('Iterator' in globalThis)) {
     const Iterator = function Iterator() {};
 
     Iterator.prototype = IteratorPrototype;
 
     // @ts-ignore
-    (_globalThis as Window).Iterator = Iterator;
+    globalThis.Iterator = Iterator;
   }
-  if (!('AsyncIterator' in _globalThis)) {
+  if (!('AsyncIterator' in globalThis)) {
     const AsyncIterator = function AsyncIterator() {};
 
     AsyncIterator.prototype = AsyncIteratorPrototype;
 
     // @ts-ignore
-    (_globalThis as Window).AsyncIterator = AsyncIterator;
+    globalThis.AsyncIterator = AsyncIterator;
   }
 })();
