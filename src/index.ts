@@ -400,6 +400,7 @@ class IteratorPolyfill<T, TReturn = any, TNext = undefined>
         it.return && it.return()
         return value
       }
+      next = it.next()
     }
   }
 
