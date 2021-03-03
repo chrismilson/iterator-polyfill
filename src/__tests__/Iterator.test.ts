@@ -226,7 +226,7 @@ describe('Iterator', () => {
 
       // see above
       // @ts-expect-error
-      expect(iterator.some((v) => v)).toBe(false)
+      expect(iterator.every((v) => v)).toBe(false)
     })
 
     it('should return true if all of the members are truthy', () => {
@@ -234,13 +234,13 @@ describe('Iterator', () => {
 
       // see above
       // @ts-expect-error
-      expect(iterator.some((v) => v)).toBe(true)
+      expect(iterator.every((v) => v)).toBe(true)
     })
 
     it('should return true on an empty iterator', () => {
       const iterator = Iterator.from([])
 
-      expect(iterator.some(() => false)).toBe(true)
+      expect(iterator.every(() => false)).toBe(true)
     })
   })
 
