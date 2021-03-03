@@ -418,7 +418,7 @@ class AsyncIteratorPolyfill<T, TReturn, TNext>
   return?(
     value?: TReturn | PromiseLike<TReturn>
   ): Promise<IteratorResult<T, TReturn>>
-  throw?(e?: any): Promise<IteratorResult<T, TReturn>>\
+  throw?(e?: any): Promise<IteratorResult<T, TReturn>>
 
   static from<T>(asyncIterable: AsyncIterable<T>): AsyncIterator<T> {
     return asyncIterable[Symbol.asyncIterator]()
